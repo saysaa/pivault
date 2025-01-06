@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>>_IPEye V5</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('fond.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            overflow-x: hidden; /* Évite le défilement horizontal */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box; /* Assure que le padding est inclus dans la largeur totale */
+        }
+
+        .title {
+            font-size: 40px;
+            font-weight: bold;
+            color: purple;
+            margin-bottom: 20px;
+            font-family: "Rubik", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        .subtitle {
+            font-size: 17px;
+            font-weight: bold;
+            color: red;
+            margin-bottom: 10px;
+        }
+
+        .version {
+            font-size: 14px;
+            font-weight: bold;
+            color: rgb(255, 230, 0);
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            margin-bottom: 15px;
+        }
+
+        .ip-label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #8709e0;
+        }
+
+        .ip-entry {
+            font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+            font-weight: 500;
+            font-size: 1.2em;
+            color: #fff;
+            background-color: rgb(28,28,30);
+            box-shadow: 0 0 .4vw rgba(0,0,0,0.5), 0 0 0 .15vw transparent;
+            border-radius: 0.4vw;
+            border: none;
+            outline: none;
+            padding: 0.6em;
+            max-width: 300px;
+            width: 100%;
+            transition: .4s;
+        }
+
+        .ip-entry:hover {
+            box-shadow: 0 0 0 .15vw rgba(135, 207, 235, 0.186);
+        }
+
+        .ip-entry:focus {
+            box-shadow: 0 0 0 .15vw skyblue;
+        }
+
+        .btn-locate,
+        .btn-public-ip {
+            padding: 10px 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            background-color: #8A2BE2;
+            color: #000;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px; /* Limite la largeur maximale pour une meilleure adaptabilité */
+            box-sizing: border-box; /* Assure que le padding est inclus dans la largeur totale */
+        }
+
+        .btn-public-ip {
+            background-color: #ff7300;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            font-family: "Rubik", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 450;
+            font-style: normal;
+        }
+
+        .loading-label {
+            font-size: 16px;
+            color: #b4b3b1;
+        }
+
+        .error-label {
+            font-size: 14px;
+            color: red;
+            margin-top: 5px;
+        }
+
+        .link-button {
+            padding: 11px 21px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #ff7300;
+            color: #000;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block; /* Assure que le bouton ne dépasse pas sa largeur parent */
+        }
+
+        .cssbuttons-io {
+            position: relative;
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 15px;
+            letter-spacing: 0.05em;
+            border-radius: 0.8em;
+            cursor: pointer;
+            border: none;
+            background: linear-gradient(to right, #6306b4, #4a00e0);
+            color: ghostwhite;
+            overflow: hidden;
+            width: 100%;
+            max-width: 300px; /* Limite la largeur maximale pour une meilleure adaptabilité */
+            box-sizing: border-box; /* Assure que le padding est inclus dans la largeur totale */
+        }
+
+        .cssbuttons-io svg {
+            width: 1.2em;
+            height: 1.2em;
+            margin-right: 0.5em;
+        }
+
+        .cssbuttons-io span {
+            position: relative;
+            z-index: 10;
+            transition: color 0.4s;
+            display: inline-flex;
+            align-items: center;
+            padding: 0.8em 1.2em 0.8em 1.05em;
+        }
+
+        .cssbuttons-io::before,
+        .cssbuttons-io::after {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .cssbuttons-io::before {
+            content: "";
+            background: #000000;
+            width: 120%;
+            left: -10%;
+            transform: skew(30deg);
+            transition: transform 0.4s cubic-bezier(0.3, 1, 0.8, 1);
+        }
+
+        .cssbuttons-io:hover::before {
+            transform: translate3d(100%, 0, 0);
+        }
+
+        .cssbuttons-io:active {
+            transform: scale(0.95);
+        }
+
+        .link-button:hover {
+            background-color: #FFD700;
+        }
+
+        @media screen and (max-width: 600px) {
+            .ip-entry {
+                width: 90%;
+                margin-right: 0;
+                margin-bottom: 10px;
+                font-size: 1em;
+            }
+
+            .btn-locate,
+            .btn-public-ip {
+                width: 90%;
+                margin-bottom: 10px; /* Ajoute un espace entre les boutons sur les petits écrans */
+            }
+        }
+
+        .input {
+            color: white;
+            border: 2px solid #8707ff;
+            border-radius: 10px;
+            padding: 10px 25px;
+            background: transparent;
+            max-width: 300px;
+            width: 100%;
+            box-sizing: border-box; /* Assure que le padding est inclus dans la largeur totale */
+        }
+
+        .input:active {
+            box-shadow: 2px 2px 15px #8707ff inset;
+        }
+
+        #boutonReglages {
+            padding: 10px 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            background-color: #8A2BE2;
+            color: #000;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px; /* Limite la largeur maximale pour une meilleure adaptabilité */
+            box-sizing: border-box; /* Assure que le padding est inclus dans la largeur totale */
+        }
+
+        .second-button {
+            --hover-shadows: 16px 16px 33px #121212, -16px -16px 33px #303030;
+            --accent: rgb(107, 6, 107);
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            border: none;
+            border-radius: 1.1em;
+            background-color: #212121;
+            cursor: pointer;
+            color: white;
+            padding: 1em 2em;
+            transition: box-shadow ease-in-out 0.3s, background-color ease-in-out 0.1s, letter-spacing ease-in-out 0.1s, transform ease-in-out 0.1s;
+            box-shadow: 13px 13px 10px #1c1c1c, -13px -13px 10px #262626;
+            width: 100%;
+            max-width: 300px; /* Limite la largeur maximale pour une meilleure adaptabilité */
+            box-sizing: border-box; /* Assure que le padding est inclus dans la largeur totale */
+        }
+
+        .second-button-public {
+            --hover-shadows: 16px 16px 33px #121212, -16px -16px 33px #303030;
+            --accent: rgb(224, 94, 8);
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            border: none;
+            border-radius: 1.1em;
+            background-color: #212121;
+            cursor: pointer;
+            color: rgb(255, 255, 255);
+            padding: 1em 2em;
+            transition: box-shadow ease-in-out 0.3s, background-color ease-in-out 0.1s, letter-spacing ease-in-out 0.1s, transform ease-in-out 0.1s;
+            box-shadow: 13px 13px 10px #1c1c1c, -13px -13px 10px #262626;
+            position: relative;
+            top: 20px;
+            width: 100%;
+            max-width: 300px; /* Limite la largeur maximale pour une meilleure adaptabilité */
+            box-sizing: border-box; /* Assure que le padding est inclus dans la largeur totale */
+        }
+
+        button:hover {
+            box-shadow: var(--hover-shadows);
+        }
+
+        button:active {
+            box-shadow: var(--hover-shadows), var(--accent) 0px 0px 30px 5px;
+            background-color: var(--accent);
+            transform: scale(0.9);
+            letter-spacing: 0.15em;
+        }
+
+        .loader {
+  width: 48px;
+  height: 48px;
+  background: #353535;
+  display: block;
+  margin: 20px auto;
+  position: relative;
+  box-sizing: border-box;
+  animation: rotationBack 1s ease-in-out infinite reverse;
+}
+
+.loader::before {
+  content: '';
+  box-sizing: border-box;
+  left: 0;
+  top: 0;
+  transform: rotate(45deg);
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background: #2e2e2e;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+}
+
+.loader::after {
+  content: '';
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: rgb(0, 0, 0);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes rotationBack {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+    </style>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@471&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+    </style>
+<body>
+    <div class="container">
+        <h1 class="title">IPEye</h1>
+        <h2 class="subtitle">Localiser toutes les IP Réseaux du monde.</h2>
+        <h3 class="version">Saysaa - v5.4</h3>
+        <div class="form-container">
+            <label for="ip-entry" class="ip-label">Entrez une adresse IP :</label><br>
+            <input type="text" id="ip-entry" class="ip-entry" placeholder="Adresse IP">
+            <button class="cssbuttons-io" onclick="locateIp()">
+                <span class="button-text"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-5h2v5h-2zm0-7V7h2v2.5h-2z" fill="currentColor"></path>
+                    </svg>
+                    Localiser l'IP
+                </span>
+            </button>
+        </div>
+
+        <div class="result-container">
+            <p id="result-text" class="loading-label"></p>
+            <p id="error-text" class="error-label"></p>
+        </div>
+        <div class="form-container">
+            <button class="second-button-public" onclick="getPublicIp()">Obtenir mon IP Publique</button>
+        </div>
+    </div>
+    <script>
+        function locateIp() {
+            var ip = document.getElementById("ip-entry").value;
+            document.getElementById("result-text").innerHTML = '<div class="loader"></div>'; // Remplace le texte par le loader
+            var os = navigator.platform; // Obtenir l'OS
+
+            // Appeler l'API pour localiser l'IP
+            fetch('http://ip-api.com/json/' + ip)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        var vpnStatus = data.proxy ? 'Oui' : 'Non';
+                        // Utilisation de la méthode isConnected pour vérifier la connectivité
+                        isConnected()
+                            .then(connected => {
+                                var result = `Résultats de l'analyse :\n | - IP : ${data.query}\n| - Pays : ${data.country}\n| - Région : ${data.regionName}\n| - Ville : ${data.city}\n| - FAI : ${data.isp}\n| - VPN : ${vpnStatus}\n| - Latitude: ${data.lat}\n| - Longitude: ${data.lon}\n| - OS : ${os}\n| - Connecté : ${connected ? 'Oui' : 'Non'}`;
+                                document.getElementById("result-text").innerText = result;
+                            })
+                            .catch(error => {
+                                document.getElementById("result-text").innerText = "E4 : Impossible de vérifier la connectivité";
+                            });
+                    } else {
+                        document.getElementById("result-text").innerText = "E1 : Impossible de localiser l'IP";
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("result-text").innerText = "E2 : Impossible de récupérer les informations sur l'IP";
+                });
+        }
+
+        // Fonction pour vérifier la connectivité
+        function isConnected() {
+            return fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    return true; // L'appareil est connecté si la requête réussit
+                })
+                .catch(error => {
+                    return false; // L'appareil n'est pas connecté si la requête échoue
+                });
+        }
+
+        function getPublicIp() {
+          document.getElementById("result-text").innerHTML = '<div class="loader"></div>'; // Remplace le texte par le loader
+
+            // Appeler l'API pour obtenir l'IP publique
+            fetch('https://httpbin.org/ip')
+                .then(response => response.json())
+                .then(data => {
+                    var publicIp = data.origin || 'E5 : Impossible de récupérer l\'adresse IP publique';
+                    document.getElementById("result-text").innerText = `Votre adresse IP Publique : ${publicIp}`;
+                })
+                .catch(error => {
+                    document.getElementById("result-text").innerText = "E3 : Impossible de récupérer l'adresse IP publique";
+                });
+        }
+    </script>
+</body>
+</html>

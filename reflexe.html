@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Réflexe</title>
+    <style>
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+        #info {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-button">
+        <a href="quit.html">
+            Exit - reflexe
+        </a>
+    <canvas id="gameCanvas" width="480" height="320"></canvas>
+    <div id="info">Cliquez sur la cible dès qu'elle apparaît !</div>
+    <div id="score" style="text-align: center; font-family: Arial, sans-serif;">Score: 0</div>
+    <script src="game.js"></script>
+</body>
+</html>

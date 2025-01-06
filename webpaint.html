@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebPaint</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #2c0404;
+        }
+
+        canvas {
+            border: 2px solid #ffffff;
+            background-color: #ffffff; /* Fond blanc pour le canvas */
+        }
+
+        .controls {
+            margin-top: 10px;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .back-button a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .back-button img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        button {
+            background-color: #111144;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #222277;
+        }
+
+        .resize-controls {
+            margin-top: 10px;
+        }
+
+        .resize-controls input {
+            width: 60px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-button">
+        <a href="quit.html">
+            Exit - WebPaint
+        </a>
+    </div>
+    <h1>WebPaint 4.2</h1>
+    <canvas id="drawingCanvas" width="480" height="320"></canvas>
+    <div class="controls">
+        <button onclick="changeColor('black')">Noir</button>
+        <button onclick="changeColor('white')">Blanc</button>
+        <button onclick="changeColor('red')">Rouge</button>
+        <button onclick="changeColor('blue')">Bleu</button>
+        <button onclick="changeColor('green')">Vert</button>
+        <button onclick="changeColor('yellow')">Jaune</button>
+        <button onclick="changeColor('purple')">Violet</button>
+        <button onclick="changeColor('pink')">Rose</button>
+        <button onclick="clearCanvas()">Effacer</button>
+        <button onclick="saveDrawing()">Enregistrer</button>
+    </div>
+    <div class="resize-controls">
+        <label for="canvasWidth">Largeur:</label>
+        <input type="number" id="canvasWidth" value="480" min="100">
+        <label for="canvasHeight">Hauteur:</label>
+        <input type="number" id="canvasHeight" value="320" min="100">
+        <button onclick="resizeCanvas()">Redimensionner</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('drawingCanvas');
+        const context = canvas.getContext('2d');
+        let drawing = false;
+        let currentColor = 'black';
+
+        canvas.addEventListener('mousedown', () => {
+            drawing = true;
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+            context.beginPath();
+        });
+
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(event) {
+            if (!drawing) return;
+
+            context.lineWidth = 3;
+            context.lineCap = 'round';
+            context.strokeStyle = currentColor;
+
+            context.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+        }
+
+        function changeColor(color) {
+            currentColor = color;
+        }
+
+        function clearCanvas() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function saveDrawing() {
+            const image = canvas.toDataURL('image/jpeg', 1.0);
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = 'webpaint-draw.jpg';
+            link.click();
+        }
+
+        function resizeCanvas() {
+            const width = document.getElementById('canvasWidth').value;
+            const height = document.getElementById('canvasHeight').value;
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            canvas.width = width;
+            canvas.height = height;
+            context.putImageData(imageData, 0, 0);
+        }
+    </script>
+</body>
+</html>

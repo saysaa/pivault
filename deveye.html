@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevEye</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/darcula.min.css">
+    <style>
+        /* Style général */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #1e1e1e;
+            color: #cccccc;
+        }
+
+        /* En-tête */
+        h1 {
+            background-color: #252526;
+            color: #dcdcdc;
+            padding: 10px;
+            margin: 0;
+            font-size: 18px;
+            border-bottom: 1px solid #333;
+        }
+
+        /* Conteneur d'onglets */
+        .tab-container {
+            display: flex;
+            background-color: #333;
+        }
+
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            color: white;
+            border-right: 1px solid #444; /* Ajoute une bordure entre les onglets */
+        }
+
+        .tab:last-child {
+            border-right: none; /* Pas de bordure pour le dernier onglet */
+        }
+
+        .tab.active {
+            background-color: #007acc;
+        }
+
+        /* Conteneur principal */
+        .editor-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative; /* Nécessaire pour le positionnement */
+        }
+
+        /* Zone de texte */
+        textarea {
+            width: 50%; /* Par défaut, l'éditeur occupe 50% */
+            height: 100%;
+            padding: 15px;
+            font-family: Consolas, monospace;
+            font-size: 16px;
+            color: #cccccc;
+            background-color: #1e1e1e;
+            border: none;
+            resize: horizontal; /* Permet le redimensionnement horizontal */
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        /* Conteneur pour l'iframe */
+        .preview-container {
+            width: 560px; /* Largeur de la prévisualisation */
+            height: 315px; /* Hauteur de la prévisualisation */
+            position: absolute; /* Permet de le positionner */
+            bottom: 20px; /* Aligne en bas avec un espacement */
+            right: 20px; /* Aligne à droite avec un espacement */
+            border-radius: 10px; /* Bords arrondis */
+            overflow: hidden; /* Cache le débordement */
+            border: 2px solid #333; /* Bordure de la prévisualisation */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Ajoute une ombre pour plus de style */
+        }
+
+        /* Style de l'iframe */
+        #output {
+            width: 100%; /* Prend toute la largeur du conteneur */
+            height: 100%; /* Prend toute la hauteur du conteneur */
+            border: none;
+            background-color: white; /* Fond blanc pour l'iframe */
+        }
+
+        /* Style du bouton */
+        button {
+            margin: 10px;
+            padding: 10px 15px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #005a9e;
+        }
+
+        /* Style pour le redimensionnement */
+        .resizer {
+            width: 10px;
+            height: 100%;
+            background: #333;
+            cursor: ew-resize; /* Curseur de redimensionnement horizontal */
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 10; /* Assure que le redimensionneur est au-dessus */
+        }
+    </style>
+</head>
+<body>
+    <h1>DevEye - Saysaa</h1>
+    
+    <div class="tab-container" id="tabContainer">
+        <button onclick="addNewTab()">>_New tab</button>
+    </div>
+
+    <div class="editor-container">
+        <textarea id="codeInput" placeholder="Write or paste your code here..." oninput="updatePreview()"></textarea>
+        <div class="preview-container" id="previewContainer">
+            <iframe id="output" title="HTML/CSS/JS result"></iframe>
+            <div class="resizer" onmousedown="initResize(event)"></div>
+        </div>
+    </div>
+    
+    <button id="exportButton">Export</button>
+
+    <!-- Scripts pour highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script>
+        let currentTabIndex = 0; // Index de l'onglet actif
+        const projects = []; // Contenu des projets
+
+        function updatePreview() {
+            const codeInput = document.getElementById("codeInput").value;
+            const outputFrame = document.getElementById("output");
+            outputFrame.srcdoc = codeInput; // Affiche le code dans l'iframe
+            if (projects[currentTabIndex]) {
+                projects[currentTabIndex] = codeInput; // Sauvegarde le code dans le projet actif
+            }
+        }
+
+        function selectTab(index) {
+            // Désélectionner l'onglet actif
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach((tab, idx) => {
+                if (idx === index) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            currentTabIndex = index; // Mettre à jour l'index de l'onglet actif
+
+            // Charger le contenu du projet actif
+            document.getElementById("codeInput").value = projects[currentTabIndex] || ""; // Remplir l'éditeur avec le contenu
+            updatePreview(); // Mettre à jour la prévisualisation
+        }
+
+        function addNewTab() {
+            const tabContainer = document.getElementById("tabContainer");
+            const newIndex = projects.length; // Nouveau index pour le projet
+            projects.push(""); // Ajouter un nouvel projet
+
+            // Créer un nouvel onglet
+            const newTab = document.createElement("div");
+            newTab.className = "tab";
+            newTab.textContent = `Project ${newIndex + 1}`;
+            newTab.onclick = () => selectTab(newIndex); // Fonction onclick pour sélectionner l'onglet
+            tabContainer.insertBefore(newTab, tabContainer.lastChild); // Insérer avant le bouton "Ajouter un projet"
+
+            selectTab(newIndex); // Sélectionner le nouvel onglet
+        }
+
+        document.getElementById("exportButton").addEventListener("click", function() {
+            const codeInput = document.getElementById("codeInput").value;
+            const blob = new Blob([codeInput], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'code.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // Fonction de redimensionnement
+        let isResizing = false;
+
+        function initResize(e) {
+            isResizing = true;
+            window.addEventListener('mousemove', resize);
+            window.addEventListener('mouseup', stopResize);
+        }
+
+        function resize(e) {
+            const previewContainer = document.getElementById('previewContainer');
+            const newWidth = e.clientX - previewContainer.getBoundingClientRect().left;
+            if (newWidth > 200) { // Minimum width
+                previewContainer.style.width = `${newWidth}px`;
+            }
+        }
+
+        function stopResize() {
+            isResizing = false;
+            window.removeEventListener('mousemove', resize);
+            window.removeEventListener('mouseup', stopResize);
+        }
+
+        // Initialiser avec un premier projet vide
+        addNewTab();
+    </script>
+</body>
+</html>
