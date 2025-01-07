@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PiVault - Import HTML</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* Évite le défilement horizontal */
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        iframe {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-button">
+        <a href="quit.html">
+            Exit - Import HTML
+        </a>
+    </div>
+    <div class="container">
+        <h1>PiVault</h1>
+        <p>Select your HTML files :</p>
+
+        <input type="file" id="fileInput" accept=".html">
+        <iframe id="preview" title="Aperçu du fichier"></iframe>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+
+            if (file && file.type === 'text/html') {
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const blob = new Blob([e.target.result], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    preview.src = url;
+                };
+
+                reader.readAsText(file);
+            } else {
+                alert('Veuillez sélectionner un fichier HTML valide.');
+            }
+        });
+    </script>
+</body>
+</html>
